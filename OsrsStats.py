@@ -45,7 +45,7 @@ class OsrsPlayer:
             overall_rank = int(overall_slice[0].text.replace(",",""))
             overall_level = int(overall_slice[1].text.replace(",",""))
             overall_xp = int(overall_slice[2].text.replace(",",""))
-            self.__skill_stats["Overall"] = [overall_rank, overall_level, overall_xp]
+            self.__skill_stats["Overall"] = [overall_rank, overall_level, overall_xp, "https://www.runescape.com/img/rsp777/title2/hiscore.gif"]
             skills = self.__html.find_all("td", {"align" : "right"})[6:] # Define slice containing Skills
         except:
             self.__skill_stats["Overall"] = ["Unknown", "Unknown", "Unknown"] # Unknown if user has no overall stat
@@ -180,7 +180,7 @@ class OsrsPlayer:
             return f"Unable to return {skill} xp."
 
     # Display All Stats
-    def skills(self, raw=False):
+    def skills(self, raw=False, display=True):
         if self.player_exists == True:
             if raw == True:
                 return self.__skill_stats
@@ -192,12 +192,13 @@ class OsrsPlayer:
                     skill_rank = f"{self.__skill_stats[skill][0]:,d}" # Add thousand delimeters
                     skill_level = f"{self.__skill_stats[skill][1]:,d}" # Add thousand delimeters
                     skill_xp = f"{self.__skill_stats[skill][2]:,d}" # Add thousand delimeters
-                    print(f"{skill:^15}  |  {skill_rank:^10}  |  {skill_level:^10}  |  {skill_xp:^10}")
+                    if display == True:
+                        print(f"{skill:^15}  |  {skill_rank:^10}  |  {skill_level:^10}  |  {skill_xp:^10}")
         else:
             print("User does not exist.")
 
     # Display all clue stats
-    def clues(self, raw=False):
+    def clues(self, raw=False, display=True):
         if self.player_exists == True:
             if raw == True:
                 return self.__clue_stats
@@ -206,11 +207,12 @@ class OsrsPlayer:
                 for clue in self.__clue_stats:
                     clue_rank = f"{self.__clue_stats[clue][0]:,d}"
                     clue_score = f"{self.__clue_stats[clue][1]:,d}"
-                    print(f"{clue:^15}  |  {clue_rank:^10}  |  {clue_score:^10}")
+                    if display == True:
+                        print(f"{clue:^15}  |  {clue_rank:^10}  |  {clue_score:^10}")
         else:
             print("User does not exist.")
 
-    def other(self, raw=False):
+    def other(self, raw=False, display=True):
         if self.player_exists == True:
             if raw == True:
                 return self.__other_stats
@@ -219,7 +221,8 @@ class OsrsPlayer:
                 for other in self.__other_stats:
                     other_rank = f"{self.__other_stats[other][0]:,d}"
                     other_score = f"{self.__other_stats[other][1]:,d}"
-                    print(f"{other:^20}  |  {other_rank:^10}  |  {other_score:^10}")
+                    if display == True:
+                        print(f"{other:^20}  |  {other_rank:^10}  |  {other_score:^10}")
         else:
             print("User does not exist.")
                 
