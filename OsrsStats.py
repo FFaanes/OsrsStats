@@ -9,22 +9,25 @@ class OsrsPlayer:
         self.lowest_xp = ["",200000000]
         self.highest_xp = ["",0]
         self.lvl99 = [] # List of 99's
+        self.player_exists = False
 
         # Html Get request
         self.__html = BeautifulSoup( requests.get(f"https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1={self.username}").text, 'html.parser')
 
         # Check if player exists.
         try:
-            player_exist = (False if "No player" in self.__html.find("div", {"align":"center"}).find("div", {"align":"center"}).text else False)
-            if player_exist == False:
+            if "No player" in self.__html.find("div", {"align":"center"}).find("div", {"align":"center"}).text:
+                self.player_exists = False
                 print("Player Not Found!")
+                return
         except:
             # Run functions to overwrite default values
+            self.player_exists = True
             self.__skill_stats = self.__collect_skills()
             self.__clue_stats = self.__collect_clues()
             self.__other_stats = self.__collect_other()
             print("Player Stats Loaded!")
-            
+       
     # Used in __init__ to replace spaces with % to work in link request
     def __fix_username(self, username):
         try:
@@ -178,37 +181,46 @@ class OsrsPlayer:
 
     # Display All Stats
     def skills(self, raw=False):
-        if raw == True:
-            return self.__skill_stats
+        if self.player_exists == True:
+            if raw == True:
+                return self.__skill_stats
+            else:
+                print("                 |     Rank     |     Level    |      XP")
+                for skill in self.__skill_stats:
+                    if "Unknown" in self.__skill_stats[skill]:
+                        continue
+                    skill_rank = f"{self.__skill_stats[skill][0]:,d}" # Add thousand delimeters
+                    skill_level = f"{self.__skill_stats[skill][1]:,d}" # Add thousand delimeters
+                    skill_xp = f"{self.__skill_stats[skill][2]:,d}" # Add thousand delimeters
+                    print(f"{skill:^15}  |  {skill_rank:^10}  |  {skill_level:^10}  |  {skill_xp:^10}")
         else:
-            print("                 |     Rank     |     Level    |      XP")
-            for skill in self.__skill_stats:
-                if "Unknown" in self.__skill_stats[skill]:
-                    continue
-                skill_rank = f"{self.__skill_stats[skill][0]:,d}" # Add thousand delimeters
-                skill_level = f"{self.__skill_stats[skill][1]:,d}" # Add thousand delimeters
-                skill_xp = f"{self.__skill_stats[skill][2]:,d}" # Add thousand delimeters
-                print(f"{skill:^15}  |  {skill_rank:^10}  |  {skill_level:^10}  |  {skill_xp:^10}")
+            print("User does not exist.")
 
     # Display all clue stats
     def clues(self, raw=False):
-        if raw == True:
-            return self.__clue_stats
+        if self.player_exists == True:
+            if raw == True:
+                return self.__clue_stats
+            else:
+                print("                 |     Rank     |    Score")
+                for clue in self.__clue_stats:
+                    clue_rank = f"{self.__clue_stats[clue][0]:,d}"
+                    clue_score = f"{self.__clue_stats[clue][1]:,d}"
+                    print(f"{clue:^15}  |  {clue_rank:^10}  |  {clue_score:^10}")
         else:
-            print("                 |     Rank     |    Score")
-            for clue in self.__clue_stats:
-                clue_rank = f"{self.__clue_stats[clue][0]:,d}"
-                clue_score = f"{self.__clue_stats[clue][1]:,d}"
-                print(f"{clue:^15}  |  {clue_rank:^10}  |  {clue_score:^10}")
+            print("User does not exist.")
 
     def other(self, raw=False):
-        if raw == True:
-            return self.__other_stats
+        if self.player_exists == True:
+            if raw == True:
+                return self.__other_stats
+            else:
+                print("                      |     Rank     |    Score")
+                for other in self.__other_stats:
+                    other_rank = f"{self.__other_stats[other][0]:,d}"
+                    other_score = f"{self.__other_stats[other][1]:,d}"
+                    print(f"{other:^20}  |  {other_rank:^10}  |  {other_score:^10}")
         else:
-            print("                      |     Rank     |    Score")
-            for other in self.__other_stats:
-                other_rank = f"{self.__other_stats[other][0]:,d}"
-                other_score = f"{self.__other_stats[other][1]:,d}"
-                print(f"{other:^20}  |  {other_rank:^10}  |  {other_score:^10}")
+            print("User does not exist.")
                 
     
