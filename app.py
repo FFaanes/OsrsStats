@@ -11,6 +11,9 @@ def get_user_stats():
     root.update()
     player = OsrsStats.OsrsPlayer(player_name.get()) # Create OsrsPlayer object
 
+    skill_scroll_frame= cTk.CTkFrame(tabcontrol.tab("Skills"), width=window_width-(300+(frame_padding*4)), height=window_height-(frame_padding*3))
+    skill_scroll_frame.pack()
+
     # If player exists
     if player.player_exists == True:
         player_name_button.configure(text="✓", text_color="spring green") # Change Button Style
@@ -21,25 +24,20 @@ def get_user_stats():
         skill_per_row = 2 # Set Static Skill Page Variables
         player_skills = player.skills(raw=True) # Update Player Skills
 
-        # Calculate padding to fit window height
-        skill_rows = len(player_skills)/skill_per_row
-        print(skill_rows)
-        skill_ypadding = (window_height / skill_rows / 2) / 14
-        print(skill_ypadding)
-
         # Creating Headers
         for i in range(skill_per_row):
             # Rank
-            rank_header = cTk.CTkLabel(tabcontrol.tab("Skills"), text="Rank", text_color="spring green")
+            rank_header = cTk.CTkLabel(skill_frame, text="Rank", text_color="spring green")
             rank_header.grid(row=0, column=i*4+1)
             # Level
-            level_header = cTk.CTkLabel(tabcontrol.tab("Skills"), text="Level", text_color="spring green")
+            level_header = cTk.CTkLabel(skill_frame, text="Level", text_color="spring green")
             level_header.grid(row=0, column=i*4+2)
             # XP
-            xp_header = cTk.CTkLabel(tabcontrol.tab("Skills"), text="XP", text_color="spring green")
+            xp_header = cTk.CTkLabel(skill_frame, text="XP", text_color="spring green")
             xp_header.grid(row=0, column=i*4+3)
 
         # Generating stat display
+        skill_ypadding = 0.7
         column_counter = 0
         row_counter = 1
         for i in player_skills: # Loop over all elements in skill dictionary
@@ -50,19 +48,19 @@ def get_user_stats():
             skill_icon_image = cTk.CTkImage(skill_icon_image)
 
             # Display Icon
-            skill_icon = cTk.CTkLabel(tabcontrol.tab("Skills"), image=skill_icon_image, text=" ")
+            skill_icon = cTk.CTkLabel(skill_frame, image=skill_icon_image, text=" ")
             skill_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=skill_ypadding)
 
             # Display Rank
-            skill_rank = cTk.CTkLabel(tabcontrol.tab("Skills"), text=f"{player_skills[i][0]:,d}")
+            skill_rank = cTk.CTkLabel(skill_frame, text=f"{player_skills[i][0]:,d}")
             skill_rank.grid(row=row_counter, column=column_counter+1, padx=frame_padding, pady=skill_ypadding)
 
             # Display Level
-            skill_level = cTk.CTkLabel(tabcontrol.tab("Skills"), text=f"{player_skills[i][1]:,d}")
+            skill_level = cTk.CTkLabel(skill_frame, text=f"{player_skills[i][1]:,d}")
             skill_level.grid(row=row_counter, column=column_counter+2, padx=frame_padding, pady=skill_ypadding) 
 
             # Display XP
-            skill_xp = cTk.CTkLabel(tabcontrol.tab("Skills"), text=f"{player_skills[i][2]:,d}")
+            skill_xp = cTk.CTkLabel(skill_frame, text=f"{player_skills[i][2]:,d}")
             skill_xp.grid(row=row_counter, column=column_counter+3, padx=frame_padding, pady=skill_ypadding) 
 
             # Evere skill uses 4 columns, when this reaches the skills per row
@@ -80,21 +78,15 @@ def get_user_stats():
 
         # Set Static Variables
         other_per_row = 3
-
-        # Calculate padding to fit window height
-
-        other_rows = (len(player_clues)+len(player_other))/other_per_row
-        print(other_rows)
-        other_ypadding = (window_height / other_rows / 2) / 10
-        print(other_ypadding)
+        other_ypadding = 1.5
 
         # Creating Headers
         for i in range(other_per_row):
             # Rank
-            rank_header = cTk.CTkLabel(tabcontrol.tab("Other"), text="Rank", text_color="spring green")
+            rank_header = cTk.CTkLabel(other_scroll_frame, text="Rank", text_color="spring green")
             rank_header.grid(row=0, column=i*3+1)
             # Score
-            score_header = cTk.CTkLabel(tabcontrol.tab("Other"), text="Score", text_color="spring green")
+            score_header = cTk.CTkLabel(other_scroll_frame, text="Score", text_color="spring green")
             score_header.grid(row=0, column=i*3+2)
 
         # Generating stat display
@@ -108,15 +100,15 @@ def get_user_stats():
             clue_icon_image = cTk.CTkImage(clue_icon_image)
 
             # Display Icon
-            skill_icon = cTk.CTkLabel(tabcontrol.tab("Other"), image=clue_icon_image, text=" ")
+            skill_icon = cTk.CTkLabel(other_scroll_frame, image=clue_icon_image, text=" ")
             skill_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=other_ypadding)
 
             # Display Rank
-            skill_rank = cTk.CTkLabel(tabcontrol.tab("Other"), text=f"{player_clues[i][0]:,d}")
+            skill_rank = cTk.CTkLabel(other_scroll_frame, text=f"{player_clues[i][0]:,d}")
             skill_rank.grid(row=row_counter, column=column_counter+1, padx=frame_padding, pady=other_ypadding)
 
             # Display Score
-            skill_level = cTk.CTkLabel(tabcontrol.tab("Other"), text=f"{player_clues[i][1]:,d}")
+            skill_level = cTk.CTkLabel(other_scroll_frame, text=f"{player_clues[i][1]:,d}")
             skill_level.grid(row=row_counter, column=column_counter+2, padx=frame_padding, pady=other_ypadding) 
 
             # Evere skill uses 4 columns, when this reaches the per row
@@ -134,15 +126,15 @@ def get_user_stats():
             other_icon_image = cTk.CTkImage(other_icon_image)
 
             # Display Icon
-            other_icon = cTk.CTkLabel(tabcontrol.tab("Other"), image=other_icon_image, text=" ")
+            other_icon = cTk.CTkLabel(other_scroll_frame, image=other_icon_image, text=" ")
             other_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=other_ypadding)
 
             # Display Rank
-            other_rank = cTk.CTkLabel(tabcontrol.tab("Other"), text=f"{player_other[i][0]:,d}")
+            other_rank = cTk.CTkLabel(other_scroll_frame, text=f"{player_other[i][0]:,d}")
             other_rank.grid(row=row_counter, column=column_counter+1, padx=frame_padding, pady=other_ypadding)
 
             # Display Score
-            other_level = cTk.CTkLabel(tabcontrol.tab("Other"), text=f"{player_other[i][1]:,d}")
+            other_level = cTk.CTkLabel(other_scroll_frame, text=f"{player_other[i][1]:,d}")
             other_level.grid(row=row_counter, column=column_counter+2, padx=frame_padding, pady=other_ypadding) 
 
             # Evere skill uses 4 columns, when this reaches the per row
@@ -200,8 +192,13 @@ tabcontrol.pack_propagate(False)
 tabcontrol.pack()
 
 tabcontrol.add("Skills")
+skill_frame= cTk.CTkFrame(tabcontrol.tab("Skills"), width=window_width-(300+(frame_padding*4)), height=window_height-(frame_padding*3))
+skill_frame.pack()
 
 tabcontrol.add("Other")
+other_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Other"), width=window_width-(300+(frame_padding)), height=window_height-(frame_padding*3))
+other_scroll_frame.pack()
+
 tabcontrol.add("Monitoring")
 
 # Add content to skills page
