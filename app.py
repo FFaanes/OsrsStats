@@ -176,19 +176,19 @@ settingsframe.pack_propagate(False)
 settingsframe.grid(row=0, column=0, padx=frame_padding / 2, pady=frame_padding / 2)
 
 player_name = cTk.CTkEntry(settingsframe, width=200, placeholder_text="Username")
-player_name.grid(row=0, column=0, pady=(10,3), padx=(40,5))
+player_name.grid(row=0, column=0, pady=(10,3), padx=(30,5))
 
 player_name_button = cTk.CTkButton(settingsframe, text=">", width=30, fg_color="gray13", hover_color="gray10", command=get_user_stats)
 player_name_button.grid(row=0, column=1, pady=(10,3))
 
 player_exist = cTk.CTkLabel(settingsframe, text=" ")
-player_exist.grid(row=1,column=0, columnspan=4)
+player_exist.grid(row=1,column=0, columnspan=4, padx=(20,0))
 
 # Highest XP stat left frame
 highest_xp_frame = cTk.CTkFrame(settingsframe, height=60)
-highest_xp_frame.grid(row=2, column=0, columnspan=5, pady=(10,20))
+highest_xp_frame.grid(row=2, column=0, columnspan=5, pady=(10,20), padx=(20,0))
 
-highest_xp = cTk.CTkLabel(highest_xp_frame, text="Highest XP", text_color="goldenrod1").grid(row=0, column=1, columnspan=2) # Header
+highest_xp = cTk.CTkLabel(highest_xp_frame, text="Highest XP", text_color="goldenrod1").grid(row=0, column=0, columnspan=4) # Header
 highest_xp_icon = cTk.CTkLabel(highest_xp_frame, text="icon").grid(row=1, column=0, padx=frame_padding*5) # Icon
 highest_xp_rank = cTk.CTkLabel(highest_xp_frame, text="rank").grid(row=1, column=1, padx=frame_padding*5) # Rank
 highest_xp_level = cTk.CTkLabel(highest_xp_frame, text="level").grid(row=1, column=2, padx=frame_padding*5) # Level
@@ -196,9 +196,9 @@ highest_xp_xp = cTk.CTkLabel(highest_xp_frame, text="xp").grid(row=1, column=3, 
 
 # Lowest XP stat left frame
 lowest_xp_frame = cTk.CTkFrame(settingsframe, height=60)
-lowest_xp_frame.grid(row=3, column=0, columnspan=5, pady=(0,20))
+lowest_xp_frame.grid(row=3, column=0, columnspan=5, pady=(0,20), padx=(20,0))
 
-lowest_xp = cTk.CTkLabel(lowest_xp_frame, text="Lowest XP", text_color="goldenrod1").grid(row=0, column=1, columnspan=2) # Header
+lowest_xp = cTk.CTkLabel(lowest_xp_frame, text="Lowest XP", text_color="goldenrod1").grid(row=0, column=0, columnspan=4) # Header
 lowest_xp_icon = cTk.CTkLabel(lowest_xp_frame, text="icon").grid(row=1, column=0, padx=frame_padding*5) # Icon
 lowest_xp_rank = cTk.CTkLabel(lowest_xp_frame, text="rank").grid(row=1, column=1, padx=frame_padding*5) # Rank
 lowest_xp_level = cTk.CTkLabel(lowest_xp_frame, text="level").grid(row=1, column=2, padx=frame_padding*5) # Level
