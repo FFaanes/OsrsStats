@@ -1,6 +1,7 @@
 import time
 import OsrsStats
 import customtkinter as cTk
+from tktooltip import ToolTip
 from PIL import Image, ImageTk
 import urllib
 import io
@@ -41,6 +42,8 @@ def get_user_stats():
         column_counter = 0
         row_counter = 1
         for i in player_skills: # Loop over all elements in skill dictionary
+            if player_skills[i][0] == "Unknown": # If player has no overall rank
+                continue # Skip to next element in loop
             
             # Request icon from highscore page
             skill_icon_request = urllib.request.urlopen(player_skills[i][3]).read()
@@ -49,6 +52,7 @@ def get_user_stats():
 
             # Display Icon
             skill_icon = cTk.CTkLabel(skill_frame, image=skill_icon_image, text=" ")
+            skill_icon_tooltip = ToolTip()
             skill_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=skill_ypadding)
 
             # Display Rank
@@ -100,16 +104,16 @@ def get_user_stats():
             clue_icon_image = cTk.CTkImage(clue_icon_image)
 
             # Display Icon
-            skill_icon = cTk.CTkLabel(other_scroll_frame, image=clue_icon_image, text=" ")
-            skill_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=other_ypadding)
+            clue_icon = cTk.CTkLabel(other_scroll_frame, image=clue_icon_image, text=" ")
+            clue_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=other_ypadding)
 
             # Display Rank
-            skill_rank = cTk.CTkLabel(other_scroll_frame, text=f"{player_clues[i][0]:,d}")
-            skill_rank.grid(row=row_counter, column=column_counter+1, padx=frame_padding, pady=other_ypadding)
+            clue_rank = cTk.CTkLabel(other_scroll_frame, text=f"{player_clues[i][0]:,d}")
+            clue_rank.grid(row=row_counter, column=column_counter+1, padx=frame_padding, pady=other_ypadding)
 
             # Display Score
-            skill_level = cTk.CTkLabel(other_scroll_frame, text=f"{player_clues[i][1]:,d}")
-            skill_level.grid(row=row_counter, column=column_counter+2, padx=frame_padding, pady=other_ypadding) 
+            clue_score = cTk.CTkLabel(other_scroll_frame, text=f"{player_clues[i][1]:,d}")
+            clue_score.grid(row=row_counter, column=column_counter+2, padx=frame_padding, pady=other_ypadding) 
 
             # Evere skill uses 4 columns, when this reaches the per row
             # Increment the row by 1
@@ -143,7 +147,6 @@ def get_user_stats():
             if column_counter == other_per_row*3:
                 row_counter += 1
                 column_counter = 0
-            
 
         player_exist.configure(text=f"{player.username} Loaded!", text_color="spring green") # Display success message 
         root.geometry(f"{str(window_width)}x{str(window_height)}") # Expand window to show statistics

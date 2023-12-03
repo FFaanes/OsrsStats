@@ -48,7 +48,7 @@ class OsrsPlayer:
             self.__skill_stats["Overall"] = [overall_rank, overall_level, overall_xp, "https://www.runescape.com/img/rsp777/title2/hiscore.gif"]
             skills = self.__html.find_all("td", {"align" : "right"})[6:] # Define slice containing Skills
         except:
-            self.__skill_stats["Overall"] = ["Unknown", "Unknown", "Unknown"] # Unknown if user has no overall stat
+            self.__skill_stats["Overall"] = ["Unknown", "Unknown", "Unknown", "https://www.runescape.com/img/rsp777/title2/hiscore.gif"] # Unknown if user has no overall stat
             skills = self.__html.find_all("td", {"align" : "right"})[3:] # Define slice containing Skills if user does not have overall stat
 
         # Loop over each skill and get rank, level and xp, appending this to self.skill_stats
