@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+import copy
+
 
 class OsrsPlayer:
     def __init__(self, username):
@@ -52,6 +54,7 @@ class OsrsPlayer:
             skills = self.__html.find_all("td", {"align" : "right"})[3:] # Define slice containing Skills if user does not have overall stat
 
         # Loop over each skill and get rank, level and xp, appending this to self.skill_stats
+        total_level = 0
         for skill_nr in range(23):
             current_skill_slice = skills[skill_nr * 4 : skill_nr * 4 + 4]
 
@@ -64,6 +67,8 @@ class OsrsPlayer:
                 current_skill_rank = int(current_skill_slice[1].text.replace(",","")) # Rank
                 current_skill_level = int(current_skill_slice[2].text.replace(",","")) # Level
                 current_skill_xp = int(current_skill_slice[3].text.replace(",","")) # XP
+
+                total_level += current_skill_level # For calculating average level
                 
                 # Find Lowest Skill
                 if current_skill_level < self.lowest_skill[1]:
@@ -79,7 +84,7 @@ class OsrsPlayer:
                 if current_skill_level == 99:
                     self.lvl99.append(current_skill)
                 if len(self.lvl99) == 23:
-                    self.lvl99 = "Max"
+                    self.lvl99.append("Max")
                     
                 # Get Highest XP
                 if current_skill_xp > self.highest_xp[1]:
@@ -90,6 +95,9 @@ class OsrsPlayer:
                 self.__skill_stats[current_skill] = [current_skill_rank,current_skill_level,current_skill_xp, current_skill_icon]
             else:
                 break
+
+        # Calculate average level
+        self._average_level = int(total_level / 23)
         return self.__skill_stats
 
     def __collect_clues(self):
@@ -226,13 +234,65 @@ class OsrsPlayer:
         else:
             print("User does not exist.")
 
-    def compare(self):
-        self.__new_skill_stats = self.__collect_skills()
-        self.__new_clue_stats = self.__collect_clues()
-        self.__new_other_stats = self.__collect_other()
+    def update_stats(self):
+        # Update Stats
+        self.__collect_skills()
+        self.__collect_clues()
+        self.__collect_other()
 
-        # Check all skill stats
+    def compare(self):
+        changes = {}
+
+        # Create copy of stats
+        original_skill_stats = copy.deepcopy(self.__skill_stats)
+        original_clue_stats = copy.deepcopy(self.__clue_stats)
+        original_other_stats = copy.deepcopy(self.__other_stats)
+        
+        self.update_stats()
+
+        # ---------- Skill Changes --------
         for skill in self.__skill_stats:
-            print(skill)
+            # Check changes in xp
+            if self.__skill_stats[skill][2] != original_skill_stats[skill][2]:
+                xp_gain = self.__skill_stats[skill][2] - original_skill_stats[skill][2]
+                changes[skill] = ["xp", xp_gain]
+            
+            # Check changes in level
+            if self.__skill_stats[skill][1] != original_skill_stats[skill][1]:
+                xp_gain = self.__skill_stats[skill][1] - original_skill_stats[skill][1]
+                changes[skill] = ["level", xp_gain]
+
+        # ---------- Clue Changes ---------
+        for clue in self.__clue_stats:
+            # Check changes in clue count
+            if self.__clue_stats[clue][1] != original_clue_stats[clue][1]:
+                clue_count_change = self.__clue_stats[clue][1] - original_clue_stats[clue][1]
+                changes[clue] = ["clue", clue_count_change]
+
+        # ---------- Other Changes ---------
+        for other in self.__other_stats:
+            # Check if any other changes
+            if self.__other_stats[other][1] != original_other_stats[other][1]:
+                other_count_change = self.__other_stats[other][1] - original_other_stats[other][1]
+                changes[other] = ["other", other_count_change]
+        
+        return changes
+                
+    
+    # Functions for testing changes in skill stats
+    def _add_skill_xp(self, skill, xp):
+        self.__skill_stats[skill][2] -= xp
+
+    def _add_skill_level(self, skill, levels):
+        self.__skill_stats[skill][1] -= levels
+    
+    def _add_clue_count(self, clue, count):
+        self.__clue_stats[clue][1] -= count
+
+    def _add_other_count(self, other, count):
+        self.__other_stats[other][1] -= count
+
+                
+    
                 
     
