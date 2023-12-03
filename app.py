@@ -1,7 +1,6 @@
 import time
 import OsrsStats
 import customtkinter as cTk
-from tktooltip import ToolTip
 from PIL import Image, ImageTk
 import urllib
 import io
@@ -38,9 +37,12 @@ def get_user_stats():
             xp_header.grid(row=0, column=i*4+3)
 
         # Generating stat display
-        skill_ypadding = 0.7
         column_counter = 0
         row_counter = 1
+
+        skill_rows = len(player_skills) / skill_per_row
+        skill_ypadding = abs(((tabcontrol.tab("Skills")._current_height) - (skill_rows * rank_header._current_height * 1.2)) / (skill_rows * 2))
+
         for i in player_skills: # Loop over all elements in skill dictionary
             if player_skills[i][0] == "Unknown": # If player has no overall rank
                 continue # Skip to next element in loop
@@ -52,7 +54,6 @@ def get_user_stats():
 
             # Display Icon
             skill_icon = cTk.CTkLabel(skill_frame, image=skill_icon_image, text=" ")
-            skill_icon_tooltip = ToolTip()
             skill_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=skill_ypadding)
 
             # Display Rank
@@ -163,9 +164,9 @@ cTk.set_default_color_theme("green")
 
 # Application
 root = cTk.CTk()
-root.geometry(f"300x80")
+root.geometry(f"300x70")
 #root.geometry(f"{window_width}x{window_height}")
-#root.resizable(width=False, height=False)
+root.resizable(width=False, height=False)
 root.title("OSRS Tracker")
 
 # Settings Frame (Left Frame)
@@ -181,7 +182,27 @@ player_name_button = cTk.CTkButton(settingsframe, text=">", width=30, fg_color="
 player_name_button.grid(row=0, column=1, pady=(10,3))
 
 player_exist = cTk.CTkLabel(settingsframe, text=" ")
-player_exist.grid(row=1,column=0,columnspan=2)
+player_exist.grid(row=1,column=0, columnspan=4)
+
+# Highest XP stat left frame
+highest_xp_frame = cTk.CTkFrame(settingsframe, height=60)
+highest_xp_frame.grid(row=2, column=0, columnspan=5, pady=(10,20))
+
+highest_xp = cTk.CTkLabel(highest_xp_frame, text="Highest XP", text_color="goldenrod1").grid(row=0, column=1, columnspan=2) # Header
+highest_xp_icon = cTk.CTkLabel(highest_xp_frame, text="icon").grid(row=1, column=0, padx=frame_padding*5) # Icon
+highest_xp_rank = cTk.CTkLabel(highest_xp_frame, text="rank").grid(row=1, column=1, padx=frame_padding*5) # Rank
+highest_xp_level = cTk.CTkLabel(highest_xp_frame, text="level").grid(row=1, column=2, padx=frame_padding*5) # Level
+highest_xp_xp = cTk.CTkLabel(highest_xp_frame, text="xp").grid(row=1, column=3, padx=frame_padding*5) # XP
+
+# Lowest XP stat left frame
+lowest_xp_frame = cTk.CTkFrame(settingsframe, height=60)
+lowest_xp_frame.grid(row=3, column=0, columnspan=5, pady=(0,20))
+
+lowest_xp = cTk.CTkLabel(lowest_xp_frame, text="Lowest XP", text_color="goldenrod1").grid(row=0, column=1, columnspan=2) # Header
+lowest_xp_icon = cTk.CTkLabel(lowest_xp_frame, text="icon").grid(row=1, column=0, padx=frame_padding*5) # Icon
+lowest_xp_rank = cTk.CTkLabel(lowest_xp_frame, text="rank").grid(row=1, column=1, padx=frame_padding*5) # Rank
+lowest_xp_level = cTk.CTkLabel(lowest_xp_frame, text="level").grid(row=1, column=2, padx=frame_padding*5) # Level
+lowest_xp_xp = cTk.CTkLabel(lowest_xp_frame, text="xp").grid(row=1, column=3, padx=frame_padding*5) # XP
 
 # Content Page (Right Frame)
 contentframe = cTk.CTkFrame(root, border_color="gray10",border_width=2, width=window_width - (300+frame_padding), height=window_height - frame_padding)
@@ -203,8 +224,6 @@ other_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Other"), width=windo
 other_scroll_frame.pack()
 
 tabcontrol.add("Monitoring")
-
-# Add content to skills page
 
 
 root.mainloop()
