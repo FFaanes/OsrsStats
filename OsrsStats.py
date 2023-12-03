@@ -40,6 +40,7 @@ class OsrsPlayer:
     
     def __collect_skills(self):
         self.__skill_stats = {}
+        self.__html = BeautifulSoup( requests.get(f"https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1={self.username}").text, 'html.parser')
 
         # Get overall stat if exists
         try:

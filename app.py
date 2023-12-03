@@ -33,7 +33,6 @@ def add_other():
 
 def refresh_stats():
     changes = player.compare()
-    print(changes)
     if len(changes) != 0:
         for change in changes:
             change_frame = cTk.CTkFrame(monitoring_scroll_frame, fg_color="gray10", width=450, height=30) # Create frame for change
@@ -42,7 +41,7 @@ def refresh_stats():
 
             # Timestamp for change
             change_time = cTk.CTkLabel(change_frame, text=f"{datetime.datetime.now().hour}:{datetime.datetime.now().strftime('%M')} : ", text_color="gray30")
-            change_time.grid(row=0, column=0, padx=(15,10))
+            change_time.grid(row=0, column=0, padx=(5,5))
 
             # Find icon depending on if it is a level, xp, clue or other change
             if changes[change][0] == "level" or changes[change][0] == "xp":
@@ -52,15 +51,15 @@ def refresh_stats():
             else:
                 change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_other[change][2]).read())))
             change_icon = cTk.CTkLabel(change_frame, text=" ", image=change_icon_image, bg_color="transparent")
-            change_icon.grid(row=0, column=1, padx=10)
+            change_icon.grid(row=0, column=1, padx=3)
 
             # Name of activity
             activity_text = cTk.CTkLabel(change_frame, text=change.capitalize(), text_color="spring green")
             activity_text.grid(row=0, column=2, padx=5)
 
             # Increased by text
-            change_text = cTk.CTkLabel(change_frame, text=" increased by ")
-            change_text.grid(row=0, column=3, padx=5)
+            change_text = cTk.CTkLabel(change_frame, text=" increased ")
+            change_text.grid(row=0, column=3, padx=3)
 
             # Check what suffix of change, level/levels, clue/clues etc.
             if changes[change][0] == "level":
@@ -75,7 +74,7 @@ def refresh_stats():
                 change_amount = cTk.CTkLabel(change_frame, text=f"{changes[change][1]} score", text_color="spring green")
 
             # pack change + suffix   
-            change_amount.grid(row=0, column=4, padx=6)
+            change_amount.grid(row=0, column=4, padx=4)
 
             # Get level, xp, clue or other before and after with arrow between
             if changes[change][0] == "level" or changes[change][0] == "xp":
@@ -96,7 +95,7 @@ def refresh_stats():
                 player_other[change][1] += changes[change][1]
             
             # Pack old -> new label
-            old_new.grid(row=0, column=5, padx=10)
+            old_new.grid(row=0, column=5, padx=5)
 
             # Increase row counter so next frame will be on the next row.
             player.__changes_counter += 1
@@ -199,7 +198,7 @@ def get_user_stats():
                 skill_xp = cTk.CTkLabel(skill_frame, text=f"{player_skills[i][2]:,d}", text_color="goldenrod1")
             else:
                 skill_xp = cTk.CTkLabel(skill_frame, text=f"{player_skills[i][2]:,d}")
-            skill_xp.grid(row=row_counter, column=column_counter+3, padx=frame_padding, pady=skill_ypadding) 
+            skill_xp.grid(row=row_counter, column=column_counter+3, padx=(frame_padding, frame_padding*5), pady=skill_ypadding) 
 
             # Evere skill uses 4 columns, when this reaches the skills per row
             # Increment the row by 1
@@ -304,8 +303,7 @@ cTk.set_default_color_theme("green")
 
 root = cTk.CTk()
 root.geometry(f"300x70")
-#root.geometry(f"{window_width}x{window_height}")
-#root.resizable(width=False, height=False)
+root.resizable(width=False, height=False)
 root.title("OSRS Tracker")
 
 
@@ -328,7 +326,7 @@ player_exist.grid(row=1,column=0, columnspan=4, padx=(20,0), pady=(0,15))
 
 
 # -------------- Key Stats Frame --------------------------
-key_stats_frame = cTk.CTkFrame(settingsframe, fg_color="transparent")
+key_stats_frame = cTk.CTkFrame(settingsframe, fg_color="gray15")
 key_stats_frame.grid(row=2, column=0, columnspan=5, padx=frame_padding*1.5)
 
 # ---------- Highest XP stat left frame ------------
@@ -390,11 +388,11 @@ tabcontrol.pack_propagate(False)
 tabcontrol.pack()
 
 tabcontrol.add("Skills")
-skill_frame = cTk.CTkFrame(tabcontrol.tab("Skills"), width=window_width-(300+(frame_padding*4)), height=window_height-(frame_padding*3))
+skill_frame = cTk.CTkFrame(tabcontrol.tab("Skills"), width=460, height=window_height-(frame_padding*3), fg_color="gray15")
 skill_frame.pack()
 
 tabcontrol.add("Other")
-other_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Other"), width=window_width-(300+(frame_padding)), height=window_height-(frame_padding*3))
+other_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Other"), width=450, height=window_height-(frame_padding*5), fg_color="gray15")
 other_scroll_frame.pack()
 
 tabcontrol.add("Monitoring")
