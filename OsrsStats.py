@@ -225,5 +225,14 @@ class OsrsPlayer:
                         print(f"{other:^20}  |  {other_rank:^10}  |  {other_score:^10}")
         else:
             print("User does not exist.")
+
+    def compare(self):
+        self.__new_skill_stats = self.__collect_skills()
+        self.__new_clue_stats = self.__collect_clues()
+        self.__new_other_stats = self.__collect_other()
+
+        # Check all skill stats
+        for skill in self.__skill_stats:
+            print(skill)
                 
     
