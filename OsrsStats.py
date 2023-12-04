@@ -279,8 +279,8 @@ class OsrsPlayer:
             if self.__other_stats[other][1] != original_other_stats[other][1]:
                 other_count_change = self.__other_stats[other][1] - original_other_stats[other][1]
                 changes[other] = ["other", other_count_change]
-        print(changes)
-        return changes
+                
+        return changes, self.__skill_stats, self.__clue_stats, self.__other_stats, original_skill_stats, original_clue_stats, original_other_stats
                 
     
     # Functions for testing changes in skill stats

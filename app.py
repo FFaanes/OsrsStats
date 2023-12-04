@@ -9,30 +9,32 @@ import datetime
 # TEST ADDS
 def add_level():
     try:
-        player._add_skill_level(add_level_input.get(), 1)
+        player._add_skill_level(add_level_input.get(), -1)
     except:
         pass
 
 def add_xp():
     try:
-        player._add_skill_xp(add_xp_input.get(),1000)
+        player._add_skill_xp(add_xp_input.get(),-1)
     except:
         pass
 
 def add_clue():
     try:
-        player._add_clue_count(add_clue_input.get(),1)
+        player._add_clue_count(add_clue_input.get(),-1)
     except:
         pass    
 
 def add_other():
     try:
-        player._add_other_count(add_other_input.get(),1)
+        player._add_other_count(add_other_input.get(),-1)
     except:
         pass
 
 def refresh_stats():
-    changes = player.compare()
+    
+    changes, skill_stats, clue_stats, other_stats, original_skill_stats, original_clue_stats, original_other_stat = player.compare()
+
     if len(changes) != 0:
         for change in changes:
             change_frame = cTk.CTkFrame(monitoring_scroll_frame, fg_color="gray10", width=450, height=30) # Create frame for change
@@ -42,15 +44,14 @@ def refresh_stats():
             # Timestamp for change
             change_time = cTk.CTkLabel(change_frame, text=f"{datetime.datetime.now().hour}:{datetime.datetime.now().strftime('%M')} : ", text_color="gray30")
             change_time.grid(row=0, column=0, padx=(5,5))
-            print(change)
 
             # Find icon depending on if it is a level, xp, clue or other change
             if changes[change][0] == "level" or changes[change][0] == "xp":
-                change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[change][3]).read())))
+                change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(skill_stats[change][3]).read())))
             elif changes[change][0] == "clue":
-                change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_clues[change][2]).read())))
+                change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(clue_stats[change][2]).read())))
             else:
-                change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_other[change][2]).read())))
+                change_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(other_stats[change][2]).read())))
             change_icon = cTk.CTkLabel(change_frame, text=" ", image=change_icon_image, bg_color="transparent")
             change_icon.grid(row=0, column=1, padx=3)
 
@@ -80,19 +81,19 @@ def refresh_stats():
             # Get level, xp, clue or other before and after with arrow between
             if changes[change][0] == "level" or changes[change][0] == "xp":
                 if changes[change][0] == "level":
-                    old_new = cTk.CTkLabel(change_frame, text=f"{player_skills[change][1]} ➜ {player_skills[change][1] + changes[change][1]}")
+                    old_new = cTk.CTkLabel(change_frame, text=f"{original_skill_stats[change][1]} ➜ {original_skill_stats[change][1] + changes[change][1]}")
                     player_skills[change][1] += changes[change][1]
                 else:
-                    new_xp = player_skills[change][2] + changes[change][1]
-                    old_new = cTk.CTkLabel(change_frame, text=f"{player_skills[change][2]:,d} ➜ {new_xp:,d}")
+                    new_xp = original_skill_stats[change][2] + changes[change][1]
+                    old_new = cTk.CTkLabel(change_frame, text=f"{original_skill_stats[change][2]:,d} ➜ {new_xp:,d}")
                     player_skills[change][2] += changes[change][1]
 
             elif changes[change][0] == "clue":
-                old_new = cTk.CTkLabel(change_frame, text=f"{player_clues[change][1]} ➜ {player_clues[change][1] + changes[change][1]}")
+                old_new = cTk.CTkLabel(change_frame, text=f"{original_clue_stats[change][1]} ➜ {original_clue_stats[change][1] + changes[change][1]}")
                 player_clues[change][1] += changes[change][1]
 
             else:
-                old_new = cTk.CTkLabel(change_frame, text=f"{player_other[change][1]} ➜ {player_other[change][1] + changes[change][1]}")
+                old_new = cTk.CTkLabel(change_frame, text=f"{original_other_stat[change][1]} ➜ {original_other_stat[change][1] + changes[change][1]}")
                 player_other[change][1] += changes[change][1]
             
             # Pack old -> new label
@@ -120,34 +121,17 @@ def get_user_stats():
     if player.player_exists == True:
 
         # Display Icons or have placeholder text (increase loading time for testing)
-        displayico = True
+        displayico = False
+        if displayico == False:
+            placeholder_icon = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen("https://www.runescape.com/img/rsp777/title2/launcher.png").read())))
 
         player_name_button.configure(text="✓", text_color="spring green") # Change Button Style
 
         # Generating Skill Window
-        player_exist.configure(text="Loading Skills...", text_color="goldenrod1")
-        player_exist.update()
         skill_per_row = 2 # Set Static Skill Page Variables
 
         global player_skills
         player_skills = player.skills(raw=True) # Update Player Skills
-
-        # ------- Highest xp left panel ---------
-        highest_xp_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[player.highest_xp[0]][3]).read())))
-        highest_xp_icon.configure(image=highest_xp_icon_image)
-        highest_xp_rank.configure(text=f"{player_skills[player.highest_xp[0]][0]:,d}")
-        highest_xp_level.configure(text=player_skills[player.highest_xp[0]][1])
-        highest_xp_xp.configure(text=f"{player_skills[player.highest_xp[0]][2]:,d}")
-
-        # ------- Lowest xp left panel ---------
-        lowest_xp_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[player.lowest_xp[0]][3]).read())))
-        lowest_xp_icon.configure(image=lowest_xp_icon_image)
-        lowest_xp_rank.configure(text=f"{player_skills[player.lowest_xp[0]][0]:,d}")
-        lowest_xp_level.configure(text=player_skills[player.lowest_xp[0]][1])
-        lowest_xp_xp.configure(text=f"{player_skills[player.lowest_xp[0]][2]:,d}")
-
-        # -------- Average Level left panel -------
-        average_level.configure(text=player._average_level)
 
         # Creating Headers
         for i in range(skill_per_row):
@@ -167,7 +151,16 @@ def get_user_stats():
 
         skill_ypadding = 1
 
+        skill_counter = 0
+        skill_count = len(player_skills)
+
         for i in player_skills: # Loop over all elements in skill dictionary
+
+            # Update loading text to show skill count
+            skill_counter += 1
+            player_exist.configure(text=f"Loading Skills... ({skill_counter}/{skill_count})", text_color="goldenrod1")
+            player_exist.update()
+
             if player_skills[i][0] == "Unknown": # If player has no overall rank
                 continue # Skip to next element in loop
             
@@ -176,7 +169,7 @@ def get_user_stats():
                 skill_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[i][3]).read())))
                 skill_icon = cTk.CTkLabel(skill_frame, image=skill_icon_image, text=" ")
             else:
-                skill_icon = cTk.CTkLabel(skill_frame, text="ico", text_color="gray9")
+                skill_icon = cTk.CTkLabel(skill_frame, image=placeholder_icon, text=" ", text_color="gray9")
             skill_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=skill_ypadding)
 
             # Display Rank
@@ -208,8 +201,6 @@ def get_user_stats():
                 column_counter = 0
 
         # Update Other Page
-        player_exist.configure(text="Loading Other...", text_color="goldenrod1")
-        player_exist.update()
         global player_clues
         global player_other
         player_clues = player.clues(raw=True) # Get clues
@@ -230,14 +221,26 @@ def get_user_stats():
         # Generating stat display
         column_counter = 0
         row_counter = 1
+
+        clue_count = len(player_clues)
+        clue_counter = 0
+        other_count = len(player_other)
+        other_counter = 0
+        
+
         for i in player_clues: # Loop over all elements in skill dictionary
+
+        # Update loading text to show skill count
+            clue_counter += 1
+            player_exist.configure(text=f"Loading Clues... ({clue_counter}/{clue_count})", text_color="goldenrod1")
+            player_exist.update()
             
             # Display Icon
             if displayico == True:
                 clue_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_clues[i][2]).read())))
                 clue_icon = cTk.CTkLabel(other_scroll_frame, image=clue_icon_image, text=" ")
             else:
-                clue_icon = cTk.CTkLabel(other_scroll_frame, text="ico", text_color="gray9")
+                clue_icon = cTk.CTkLabel(other_scroll_frame, image=placeholder_icon, text=" ", text_color="gray9")
             clue_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=skill_ypadding)
 
             # Display Rank
@@ -256,13 +259,16 @@ def get_user_stats():
                 column_counter = 0
         
         for i in player_other: # Loop over all elements in skill dictionary
+            other_counter += 1
+            player_exist.configure(text=f"Loading Other... ({other_counter}/{other_count})", text_color="goldenrod1")
+            player_exist.update()
 
             # Display Icon
             if displayico == True:
                 other_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_other[i][2]).read())))
                 other_icon = cTk.CTkLabel(other_scroll_frame, image=other_icon_image, text=" ")
             else:
-                other_icon = cTk.CTkLabel(other_scroll_frame, text="ico", text_color="gray9")
+                other_icon = cTk.CTkLabel(other_scroll_frame, image=placeholder_icon, text=" ", text_color="gray9")
             other_icon.grid(row=row_counter, column=column_counter, padx=(frame_padding*6, frame_padding), pady=skill_ypadding)
 
             # Display Rank
@@ -290,6 +296,24 @@ def get_user_stats():
     else:
         player_name_button.configure(text="✗", text_color="Red")
         player_exist.configure(text=f"{player.username} Not Found!", text_color="Red")
+
+
+    # ------- Highest xp left panel ---------
+    highest_xp_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[player.highest_xp[0]][3]).read())))
+    highest_xp_icon.configure(image=highest_xp_icon_image)
+    highest_xp_rank.configure(text=f"{player_skills[player.highest_xp[0]][0]:,d}")
+    highest_xp_level.configure(text=player_skills[player.highest_xp[0]][1])
+    highest_xp_xp.configure(text=f"{player_skills[player.highest_xp[0]][2]:,d}")
+
+    # ------- Lowest xp left panel ---------
+    lowest_xp_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[player.lowest_xp[0]][3]).read())))
+    lowest_xp_icon.configure(image=lowest_xp_icon_image)
+    lowest_xp_rank.configure(text=f"{player_skills[player.lowest_xp[0]][0]:,d}")
+    lowest_xp_level.configure(text=player_skills[player.lowest_xp[0]][1])
+    lowest_xp_xp.configure(text=f"{player_skills[player.lowest_xp[0]][2]:,d}")
+
+    # -------- Average Level left panel -------
+    average_level.configure(text=player._average_level)
 
     return player # Return player object
 
@@ -322,12 +346,11 @@ player_name_button.grid(row=0, column=3, pady=(10,3))
 
 # Text below entry field displaying status messages.
 player_exist = cTk.CTkLabel(settingsframe, text="Waiting for username..", text_color="gray5")
-player_exist.grid(row=1,column=0, columnspan=4, padx=(20,0), pady=(0,15))
-
+player_exist.grid(row=1,column=0, columnspan=3, padx=(20,0), pady=(0,15))
 
 # -------------- Key Stats Frame --------------------------
 key_stats_frame = cTk.CTkFrame(settingsframe, fg_color="gray15")
-key_stats_frame.grid(row=2, column=0, columnspan=5, padx=frame_padding*1.5)
+key_stats_frame.grid(row=2, column=0, columnspan=5, padx=(16,0))
 
 # ---------- Highest XP stat left frame ------------
 highest_xp = cTk.CTkLabel(key_stats_frame, text="Highest XP", text_color="goldenrod1")
