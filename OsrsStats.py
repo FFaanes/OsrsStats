@@ -279,28 +279,26 @@ class OsrsPlayer:
             if self.__other_stats[other][1] != original_other_stats[other][1]:
                 other_count_change = self.__other_stats[other][1] - original_other_stats[other][1]
                 changes[other] = ["other", other_count_change]
-        
+        print(changes)
         return changes
                 
     
     # Functions for testing changes in skill stats
     def _add_skill_xp(self, skill, xp):
         self.__skill_stats.setdefault(skill, [0, 0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
-        self.__skill_stats[skill][2] -= xp
+        self.__skill_stats[skill][2] += xp
 
     def _add_skill_level(self, skill, levels):
         self.__skill_stats.setdefault(skill, [0, 0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
-        self.__skill_stats[skill][1] -= levels
+        self.__skill_stats[skill][1] += levels
     
     def _add_clue_count(self, clue, count):
         self.__clue_stats.setdefault(clue, [0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
-        self.__clue_stats[clue][1] -= count
+        self.__clue_stats[clue][1] += count
 
     def _add_other_count(self, other, count):
         self.__other_stats.setdefault(other, [0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
-        self.__other_stats[other][1] -= count
+        self.__other_stats[other][1] += count
 
-                
-    
                 
     

@@ -42,6 +42,7 @@ def refresh_stats():
             # Timestamp for change
             change_time = cTk.CTkLabel(change_frame, text=f"{datetime.datetime.now().hour}:{datetime.datetime.now().strftime('%M')} : ", text_color="gray30")
             change_time.grid(row=0, column=0, padx=(5,5))
+            print(change)
 
             # Find icon depending on if it is a level, xp, clue or other change
             if changes[change][0] == "level" or changes[change][0] == "xp":
