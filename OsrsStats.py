@@ -253,6 +253,7 @@ class OsrsPlayer:
 
         # ---------- Skill Changes --------
         for skill in self.__skill_stats:
+            original_skill_stats.setdefault(skill, [0, 0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
             # Check changes in xp
             if self.__skill_stats[skill][2] != original_skill_stats[skill][2]:
                 xp_gain = self.__skill_stats[skill][2] - original_skill_stats[skill][2]
@@ -265,6 +266,7 @@ class OsrsPlayer:
 
         # ---------- Clue Changes ---------
         for clue in self.__clue_stats:
+            original_clue_stats.setdefault(clue, [0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
             # Check changes in clue count
             if self.__clue_stats[clue][1] != original_clue_stats[clue][1]:
                 clue_count_change = self.__clue_stats[clue][1] - original_clue_stats[clue][1]
@@ -272,6 +274,7 @@ class OsrsPlayer:
 
         # ---------- Other Changes ---------
         for other in self.__other_stats:
+            original_other_stats.setdefault(other, [0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
             # Check if any other changes
             if self.__other_stats[other][1] != original_other_stats[other][1]:
                 other_count_change = self.__other_stats[other][1] - original_other_stats[other][1]
@@ -282,15 +285,19 @@ class OsrsPlayer:
     
     # Functions for testing changes in skill stats
     def _add_skill_xp(self, skill, xp):
+        self.__skill_stats.setdefault(skill, [0, 0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
         self.__skill_stats[skill][2] -= xp
 
     def _add_skill_level(self, skill, levels):
+        self.__skill_stats.setdefault(skill, [0, 0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
         self.__skill_stats[skill][1] -= levels
     
     def _add_clue_count(self, clue, count):
+        self.__clue_stats.setdefault(clue, [0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
         self.__clue_stats[clue][1] -= count
 
     def _add_other_count(self, other, count):
+        self.__other_stats.setdefault(other, [0, 0, "https://www.runescape.com/img/rsp777/title2/support.png"])
         self.__other_stats[other][1] -= count
 
                 

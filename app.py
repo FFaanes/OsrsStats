@@ -96,7 +96,6 @@ def refresh_stats():
             
             # Pack old -> new label
             old_new.grid(row=0, column=5, padx=5)
-
             # Increase row counter so next frame will be on the next row.
             player.__changes_counter += 1
 
