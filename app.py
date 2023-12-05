@@ -8,19 +8,19 @@ import datetime
 
 def cancel_refresh():
     refresh_changes_timer.delete(0,cTk.END)
-    refresh_changes_timer.configure(placeholder_text="Refresh Interval (s)")
+    refresh_changes_timer.configure(textvariable="")
     refresh_changes.configure(text="Refresh", text_color="white")
 
 def refresh_stats():
     changes, skill_stats, clue_stats, other_stats, original_skill_stats, original_clue_stats, original_other_stat = player.compare()
 
-    if refresh_changes_timer.get() != "" and type(refresh_changes_timer.get()) == int:
+    if refresh_changes_timer.get() != "":
         refresh_changes.configure(text="Refreshing", text_color="goldenrod2")
         refresh_time = int(refresh_changes_timer.get()) * 1000 # Get ms from seconds
         refresh_timestamp = f"{datetime.datetime.now().strftime('%H')}:{datetime.datetime.now().strftime('%M')}:{datetime.datetime.now().strftime('%S')}"
         refresh_last_refresh.configure(text=refresh_timestamp)
         root.after(refresh_time, refresh_stats)
-    print(changes)
+
     if len(changes) != 0:
         for change in changes:
             change_frame = cTk.CTkFrame(monitoring_scroll_frame, fg_color="gray10", width=450, height=30) # Create frame for change
