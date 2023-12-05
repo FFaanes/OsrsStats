@@ -56,6 +56,7 @@ class OsrsPlayer:
 
         # Loop over each skill and get rank, level and xp, appending this to self.skill_stats
         total_level = 0
+        total_xp = 0
         for skill_nr in range(23):
             current_skill_slice = skills[skill_nr * 4 : skill_nr * 4 + 4]
 
@@ -70,6 +71,7 @@ class OsrsPlayer:
                 current_skill_xp = int(current_skill_slice[3].text.replace(",","")) # XP
 
                 total_level += current_skill_level # For calculating average level
+                total_xp += current_skill_xp
                 
                 # Find Lowest Skill
                 if current_skill_level < self.lowest_skill[1]:
@@ -99,6 +101,7 @@ class OsrsPlayer:
 
         # Calculate average level
         self._average_level = int(total_level / 23)
+        self._average_xp = int(total_xp / 23)
         return self.__skill_stats
 
     def __collect_clues(self):

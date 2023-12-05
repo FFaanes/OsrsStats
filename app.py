@@ -1,4 +1,4 @@
-import time
+
 import OsrsStats
 import customtkinter as cTk
 from PIL import Image, ImageTk
@@ -6,35 +6,21 @@ import urllib
 import io
 import datetime
 
-# TEST ADDS
-def add_level():
-    try:
-        player._add_skill_level(add_level_input.get(), -1)
-    except:
-        pass
-
-def add_xp():
-    try:
-        player._add_skill_xp(add_xp_input.get(),-1)
-    except:
-        pass
-
-def add_clue():
-    try:
-        player._add_clue_count(add_clue_input.get(),-1)
-    except:
-        pass    
-
-def add_other():
-    try:
-        player._add_other_count(add_other_input.get(),-1)
-    except:
-        pass
+def cancel_refresh():
+    refresh_changes_timer.delete(0,cTk.END)
+    refresh_changes_timer.configure(placeholder_text="Refresh Interval (s)")
+    refresh_changes.configure(text="Refresh", text_color="white")
 
 def refresh_stats():
-    
     changes, skill_stats, clue_stats, other_stats, original_skill_stats, original_clue_stats, original_other_stat = player.compare()
 
+    if refresh_changes_timer.get() != "" and type(refresh_changes_timer.get()) == int:
+        refresh_changes.configure(text="Refreshing", text_color="goldenrod2")
+        refresh_time = int(refresh_changes_timer.get()) * 1000 # Get ms from seconds
+        refresh_timestamp = f"{datetime.datetime.now().strftime('%H')}:{datetime.datetime.now().strftime('%M')}:{datetime.datetime.now().strftime('%S')}"
+        refresh_last_refresh.configure(text=refresh_timestamp)
+        root.after(refresh_time, refresh_stats)
+    print(changes)
     if len(changes) != 0:
         for change in changes:
             change_frame = cTk.CTkFrame(monitoring_scroll_frame, fg_color="gray10", width=450, height=30) # Create frame for change
@@ -42,7 +28,7 @@ def refresh_stats():
             change_frame.grid(row=player.__changes_counter, column=0, columnspan=4)
 
             # Timestamp for change
-            change_time = cTk.CTkLabel(change_frame, text=f"{datetime.datetime.now().hour}:{datetime.datetime.now().strftime('%M')} : ", text_color="gray30")
+            change_time = cTk.CTkLabel(change_frame, text=f"{datetime.datetime.now().strftime('%H')}:{datetime.datetime.now().strftime('%M')} : ", text_color="gray30")
             change_time.grid(row=0, column=0, padx=(5,5))
 
             # Find icon depending on if it is a level, xp, clue or other change
@@ -121,7 +107,7 @@ def get_user_stats():
     if player.player_exists == True:
 
         # Display Icons or have placeholder text (increase loading time for testing)
-        displayico = False
+        displayico = True
         if displayico == False:
             placeholder_icon = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen("https://www.runescape.com/img/rsp777/title2/launcher.png").read())))
 
@@ -301,19 +287,18 @@ def get_user_stats():
     # ------- Highest xp left panel ---------
     highest_xp_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[player.highest_xp[0]][3]).read())))
     highest_xp_icon.configure(image=highest_xp_icon_image)
-    highest_xp_rank.configure(text=f"{player_skills[player.highest_xp[0]][0]:,d}")
     highest_xp_level.configure(text=player_skills[player.highest_xp[0]][1])
     highest_xp_xp.configure(text=f"{player_skills[player.highest_xp[0]][2]:,d}")
 
     # ------- Lowest xp left panel ---------
     lowest_xp_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen(player_skills[player.lowest_xp[0]][3]).read())))
     lowest_xp_icon.configure(image=lowest_xp_icon_image)
-    lowest_xp_rank.configure(text=f"{player_skills[player.lowest_xp[0]][0]:,d}")
     lowest_xp_level.configure(text=player_skills[player.lowest_xp[0]][1])
     lowest_xp_xp.configure(text=f"{player_skills[player.lowest_xp[0]][2]:,d}")
 
     # -------- Average Level left panel -------
     average_level.configure(text=player._average_level)
+    average_xp.configure(text=f"{player._average_xp:,d}")
 
     return player # Return player object
 
@@ -327,7 +312,8 @@ cTk.set_default_color_theme("green")
 
 root = cTk.CTk()
 root.geometry(f"300x70")
-root.resizable(width=False, height=False)
+root.geometry(f"800x450")
+#root.resizable(width=False, height=False)
 root.title("OSRS Tracker")
 
 
@@ -349,53 +335,65 @@ player_exist = cTk.CTkLabel(settingsframe, text="Waiting for username..", text_c
 player_exist.grid(row=1,column=0, columnspan=3, padx=(20,0), pady=(0,15))
 
 # -------------- Key Stats Frame --------------------------
-key_stats_frame = cTk.CTkFrame(settingsframe, fg_color="gray15")
-key_stats_frame.grid(row=2, column=0, columnspan=5, padx=(16,0))
+key_stats_frame = cTk.CTkFrame(settingsframe, fg_color="gray15", width=260, height=345)
+key_stats_frame.grid_propagate(False)
+key_stats_frame.grid(row=2, column=0, columnspan=5, padx=(15,0))
 
 # ---------- Highest XP stat left frame ------------
-highest_xp = cTk.CTkLabel(key_stats_frame, text="Highest XP", text_color="goldenrod1")
+highest_xp_frame = cTk.CTkFrame(key_stats_frame, width=230, height=60, fg_color="gray13")
+highest_xp_frame.grid_propagate(False)
+highest_xp_frame.grid(row=0, column=0, columnspan=3, padx=13, pady=15)
+
+highest_xp = cTk.CTkLabel(highest_xp_frame, text="Highest XP", text_color="goldenrod1", width=230)
 highest_xp.grid(row=0, column=0, columnspan=4) # Header
 
-highest_xp_icon = cTk.CTkLabel(key_stats_frame, text=" ")
+highest_xp_icon_placeholder = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen("https://www.runescape.com/img/rsp777/title2/globe.gif").read())))
+highest_xp_icon = cTk.CTkLabel(highest_xp_frame, text=" ", image=highest_xp_icon_placeholder)
 highest_xp_icon.grid(row=1, column=0, padx=frame_padding*3) # Icon
 
-highest_xp_rank = cTk.CTkLabel(key_stats_frame, text="rank")
-highest_xp_rank.grid(row=1, column=1, padx=frame_padding*3) # Rank
+highest_xp_level = cTk.CTkLabel(highest_xp_frame, text="level")
+highest_xp_level.grid(row=1, column=1, padx=frame_padding*3) # Level
 
-highest_xp_level = cTk.CTkLabel(key_stats_frame, text="level")
-highest_xp_level.grid(row=1, column=2, padx=frame_padding*3) # Level
-
-highest_xp_xp = cTk.CTkLabel(key_stats_frame, text="xp")
-highest_xp_xp.grid(row=1, column=3, padx=frame_padding*3) # XP
+highest_xp_xp = cTk.CTkLabel(highest_xp_frame, text="xp")
+highest_xp_xp.grid(row=1, column=2, padx=frame_padding*3) # XP
 
 # --------- Lowest XP stat left frame -------------
-lowest_xp = cTk.CTkLabel(key_stats_frame, text="Lowest XP", text_color="goldenrod1")
-lowest_xp.grid(row=2, column=0, columnspan=4, pady=(15,0)) # Header
+lowest_xp_frame = cTk.CTkFrame(key_stats_frame, width=230, height=60, fg_color="gray13")
+lowest_xp_frame.grid_propagate(False)
+lowest_xp_frame.grid(row=1, column=0, columnspan=3, padx=13, pady=15)
 
-lowest_xp_icon = cTk.CTkLabel(key_stats_frame, text=" ")
-lowest_xp_icon.grid(row=3, column=0, padx=frame_padding*3) # Icon
+lowest_xp = cTk.CTkLabel(lowest_xp_frame, text="Lowest XP", text_color="goldenrod1", width=230)
+lowest_xp.grid(row=0, column=0, columnspan=4) # Header
 
-lowest_xp_rank = cTk.CTkLabel(key_stats_frame, text="rank")
-lowest_xp_rank.grid(row=3, column=1, padx=frame_padding*3) # Rank
+lowest_xp_icon_placeholder = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen("https://www.runescape.com/img/rsp777/title2/globe.gif").read())))
+lowest_xp_icon = cTk.CTkLabel(lowest_xp_frame, text=" ", image=lowest_xp_icon_placeholder)
+lowest_xp_icon.grid(row=1, column=0, padx=frame_padding*2) # Icon
 
-lowest_xp_level = cTk.CTkLabel(key_stats_frame, text="level")
-lowest_xp_level.grid(row=3, column=2, padx=frame_padding*3) # Level
+lowest_xp_level = cTk.CTkLabel(lowest_xp_frame, text="level")
+lowest_xp_level.grid(row=1, column=1, padx=frame_padding*2) # Level
 
-lowest_xp_xp = cTk.CTkLabel(key_stats_frame, text="xp")
-lowest_xp_xp.grid(row=3, column=3, padx=frame_padding*3) # XP
+lowest_xp_xp = cTk.CTkLabel(lowest_xp_frame, text="xp")
+lowest_xp_xp.grid(row=1, column=2, padx=frame_padding*2) # XP
 
 
 # --------- Average level left frame -------------
+
+average_frame = cTk.CTkFrame(key_stats_frame, width=230, height=60, fg_color="gray13")
+average_frame.grid_propagate(False)
+average_frame.grid(row=2, column=0, columnspan=3, padx=13, pady=15)
+
+average_level_header = cTk.CTkLabel(average_frame, text="Average:", text_color="goldenrod1", width=230)
+average_level_header.grid(row=0, column=0, columnspan=4)
+
 average_level_icon_image = cTk.CTkImage(Image.open(io.BytesIO(urllib.request.urlopen("https://www.runescape.com/img/rsp777/title2/globe.gif").read())))
-average_level_icon = cTk.CTkLabel(key_stats_frame, text=" ", image=average_level_icon_image)
-average_level_icon.grid(row=4, column=0, padx=frame_padding*3, pady=(30,0)) # Icon
+average_level_icon = cTk.CTkLabel(average_frame, text=" ", image=average_level_icon_image)
+average_level_icon.grid(row=1, column=0, padx=frame_padding*3) # Icon
 
-average_level_header = cTk.CTkLabel(key_stats_frame, text="Average Level:", text_color="goldenrod1")
-average_level_header.grid(row=4, column=1, columnspan=2, pady=(30,0))
+average_level = cTk.CTkLabel(average_frame, text="level")
+average_level.grid(row=1, column=1, padx=frame_padding*2) # Level
 
-average_level = cTk.CTkLabel(key_stats_frame, text="level")
-average_level.grid(row=4, column=3, columnspan=1, padx=frame_padding*3, pady=(30,0)) # Rank
-
+average_xp = cTk.CTkLabel(average_frame, text="xp")
+average_xp.grid(row=1, column=2, padx=frame_padding*2) # xp
 
 
 
@@ -411,38 +409,29 @@ tabcontrol.pack_propagate(False)
 tabcontrol.pack()
 
 tabcontrol.add("Skills")
-skill_frame = cTk.CTkFrame(tabcontrol.tab("Skills"), width=460, height=window_height-(frame_padding*3), fg_color="gray15")
+skill_frame = cTk.CTkFrame(tabcontrol.tab("Skills"), width=470, height=window_height-(frame_padding*10), fg_color="gray15")
 skill_frame.pack()
 
 tabcontrol.add("Other")
-other_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Other"), width=450, height=window_height-(frame_padding*5), fg_color="gray15")
+other_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Other"), width=450, height=window_height-(frame_padding*10), fg_color="gray15")
 other_scroll_frame.pack()
 
+
+# ---------------- Monitoring tab ---------------
 tabcontrol.add("Monitoring")
-monitoring_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Monitoring"), fg_color="gray12", width=450)
-monitoring_scroll_frame.grid(row=5, column=0, columnspan=4)
+monitoring_scroll_frame = cTk.CTkScrollableFrame(tabcontrol.tab("Monitoring"), fg_color="gray12", width=450, height=315)
+monitoring_scroll_frame.grid(row=1, column=0, columnspan=4, pady=(20, 0))
 
-add_level_button = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="Add Level", command=add_level)
-add_level_button.grid(row=0, column=0)
-add_level_input = cTk.CTkEntry(tabcontrol.tab("Monitoring"), placeholder_text="Skill")
-add_level_input.grid(row=0, column=1)
+refresh_changes = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="Refresh", fg_color="gray12", hover_color="gray10", command=refresh_stats)
+refresh_changes.grid(row=0, column=0, columnspan=1, pady=(10,0))
 
-add_xp_button = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="Add XP", command=add_xp)
-add_xp_button.grid(row=1, column=0)
-add_xp_input = cTk.CTkEntry(tabcontrol.tab("Monitoring"), placeholder_text="Skill")
-add_xp_input.grid(row=1, column=1)
+refresh_changes_timer = cTk.CTkEntry(tabcontrol.tab("Monitoring"), placeholder_text="Refresh Interval   (s)")
+refresh_changes_timer.grid(row=0, column=1, pady=(10,0))
 
-add_clue_button = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="Add Clue", command=add_clue)
-add_clue_button.grid(row=2, column=0)
-add_clue_input = cTk.CTkEntry(tabcontrol.tab("Monitoring"), placeholder_text="Clue")
-add_clue_input.grid(row=2, column=1)
+refresh_loop_cancel = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="✗", text_color="Red", width=30, fg_color="gray13", hover_color="gray10", command=cancel_refresh)
+refresh_loop_cancel.grid(row=0, column=2, pady=(10,0))
 
-add_other_button = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="Add Other", command=add_other)
-add_other_button.grid(row=3, column=0)
-add_other_input = cTk.CTkEntry(tabcontrol.tab("Monitoring"), placeholder_text="Other")
-add_other_input.grid(row=3, column=1)
-
-refresh_skills = cTk.CTkButton(tabcontrol.tab("Monitoring"), text="Refresh", command=refresh_stats)
-refresh_skills.grid(row=4, column=0)
+refresh_last_refresh = cTk.CTkLabel(tabcontrol.tab("Monitoring"), width=50, text="", text_color="gray30")
+refresh_last_refresh.grid(row=0, column=3, pady=(10,0))
 
 root.mainloop()
