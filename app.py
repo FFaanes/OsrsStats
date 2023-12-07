@@ -100,6 +100,9 @@ def get_user_stats():
             child.destroy()
         for child in other_scroll_frame.winfo_children():
             child.destroy()
+        for child in monitoring_scroll_frame.winfo_children():
+            child.destroy()
+        cancel_refresh()
     except:
         pass
 
