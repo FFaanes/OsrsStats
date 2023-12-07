@@ -314,9 +314,9 @@ frame_padding = 4
 cTk.set_default_color_theme("green")
 
 root = cTk.CTk()
-root.geometry(f"300x70")
+#root.geometry(f"300x70")
 root.geometry(f"800x450")
-#root.resizable(width=False, height=False)
+root.resizable(width=False, height=False)
 root.title("OSRS Tracker")
 
 
