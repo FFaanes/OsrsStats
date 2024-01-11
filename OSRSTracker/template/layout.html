@@ -1,0 +1,19 @@
+
+<!DOCTYPE html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}">
+
+</head>
+<body>
+    <div class="content_frame">
+    {% block content %}{% endblock %}
+    </div>
+
+</body>
+
+
+
+<footer>
+</footer>

@@ -1,0 +1,54 @@
+
+{% extends "layout.html" %}
+
+<!-- Title -->
+{% block title %}{{username}}{% endblock %}
+
+<!-- Main Contents -->
+{% block content %}
+
+<h1 style="color: rgb(245, 226, 57);">{{username}}</h1>
+
+<table>
+<tr>
+    <td class="table_header"></td>
+    <td class="table_header"></td>
+    <td class="table_header">Rank</td>
+    <td class="table_header">Level</td>
+    <td class="table_header">XP</td>
+</tr>
+
+{% for skill in skills %}
+
+<tr>
+    <td><img src="{{skills[skill][3]}}"></td>
+    <td style="padding-left:5px" class="skill_data">{{skill}}</td>
+    <td class="skill_data">{{skills[skill][0]}}</td>
+    <td class="skill_data">{{skills[skill][1]}}</td>
+    <td class="skill_data">{{skills[skill][2]}}</td>
+</tr>
+
+
+{% endfor %}
+</table>
+
+<form method="post">
+<input type="submit" value="Refresh" id="refresh_changes">
+</form>
+
+
+{% if changes %}
+    <table>
+    {% for change in changes %}
+        <tr>
+            <td><img src="{{skills[change][3]}}"></td>
+            <td style="padding-left:5px" class="skill_data">{{change}}</td>
+            <td class="skill_data">{{changes[change][1]}}</td>
+            <td class="skill_data">{{changes[change][0]}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endif %}
+
+
+{% endblock %}
